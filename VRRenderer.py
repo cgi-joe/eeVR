@@ -514,7 +514,7 @@ class VRRenderer:
             if imageR in bpy.data.images:
                 bpy.data.images.remove(bpy.data.images[imageR])
             renderedImage =  bpy.data.images.load(self.path + image_name)
-            renderedImage.colorspace_settings.name='Linear'
+            renderedImage.colorspace_settings.name='Non-Color'
             imageLen = len(renderedImage.pixels)
             if self.no_back_image and direction in {'top', 'bottom'}:
                 renderedImageL = bpy.data.images.new(imageL, self.side_resolution,\
@@ -582,6 +582,7 @@ class VRRenderer:
         self.scene.render.resolution_y = self.side_resolution
         self.camera.data.shift_x = 0
         self.camera.data.shift_y = 0
+        
        
        
         frame_step = self.scene.frame_step
@@ -648,6 +649,13 @@ class RenderImage(Operator):
        
         mode = bpy.context.scene.renderModeEnum
         FOV = bpy.context.scene.renderFOV
+        exposure = bpy.context.scene.view_settings.exposure
+        gamma = bpy.context.scene.view_settings.gamma
+        look = bpy.context.scene.view_settings.look
+        bpy.context.scene.view_settings.exposure = 0
+        bpy.context.scene.view_settings.gamma = 1
+        bpy.context.scene.view_settings.look = 'None'
+        bpy.context.scene.view_settings.use_curve_mapping = False
         renderer = VRRenderer(bpy.context.scene.render.use_multiview, False, mode, FOV)
         renderer.render_and_save() 
         renderer.clean_up() 
@@ -769,7 +777,7 @@ def unregister():
 bl_info = {
     "name": "eeVR",
     "description": "Render in different projections using Eevee engine",
-    "author": "EternalTrail",
+    "author": "CGIJOE",
     "version": (0, 1),
     "blender": (2, 82, 7),
     "location": "View3D > UI",
